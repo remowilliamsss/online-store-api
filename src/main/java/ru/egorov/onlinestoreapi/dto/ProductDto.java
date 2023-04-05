@@ -1,19 +1,13 @@
-package ru.egorov.onlinestoreapi.model;
+package ru.egorov.onlinestoreapi.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
-@Entity
 @Getter
 @Setter
-public class Item {
+public class ProductDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotEmpty
@@ -28,7 +22,4 @@ public class Item {
     private Integer amount;
 
     private String image;
-
-    @ManyToMany(mappedBy = "favorites")
-    private Set<User> likes;
 }
