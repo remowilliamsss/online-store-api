@@ -10,9 +10,9 @@ import lombok.Setter;
 public class UserCredentials {
 
     @NotEmpty
-    private String username;
+    private String name;
 
-    @Size(max = 128)
+    @Size(max = 256)
     @NotEmpty
     private String password;
 

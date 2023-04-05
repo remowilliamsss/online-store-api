@@ -16,7 +16,7 @@ public class UserDto {
     private int id;
 
     @NotEmpty
-    @Size(max = 128)
+    @Size(max = 256)
     private String name;
 
     private Boolean isAdmin;
