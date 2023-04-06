@@ -25,8 +25,6 @@ public class UserService {
     }
 
     public User update(User user) {
-        user = userRepository.findByName(user.getName())
-                .orElseThrow();
 
         return userRepository.save(user);
     }

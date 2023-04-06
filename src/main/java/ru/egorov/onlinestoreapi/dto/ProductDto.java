@@ -1,6 +1,6 @@
 package ru.egorov.onlinestoreapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ public class ProductDto {
 
     private int id;
 
-    @NotEmpty
+    @NotBlank
     private String name;
 
     private String category;

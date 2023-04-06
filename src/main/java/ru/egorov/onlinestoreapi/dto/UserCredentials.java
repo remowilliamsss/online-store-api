@@ -1,5 +1,6 @@
 package ru.egorov.onlinestoreapi.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class UserCredentials {
 
-    @NotEmpty
+    @NotBlank
     private String name;
 
     @Size(max = 256)

@@ -1,6 +1,6 @@
 package ru.egorov.onlinestoreapi.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ public class UserDto {
 
     private int id;
 
-    @NotEmpty
+    @NotBlank
     @Size(max = 256)
     private String name;
 

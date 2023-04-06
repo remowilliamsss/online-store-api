@@ -2,6 +2,8 @@ package ru.egorov.onlinestoreapi.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.egorov.onlinestoreapi.dto.UserCredentials;
@@ -16,7 +18,8 @@ import ru.egorov.onlinestoreapi.validator.UserCredentialsValidator;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
+import static ru.egorov.onlinestoreapi.util.ErrorMessageBuilder.getErrorMessage;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class UserController {
     private final UserCredentialsValidator validator;
 
     @PostMapping("/registration")
-    public UserDto registration(@RequestBody @Valid UserCredentials credentials, BindingResult bindingResult)
+    public ResponseEntity<UserDto> registration(@RequestBody @Valid UserCredentials credentials, BindingResult bindingResult)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         validator.validate(credentials, bindingResult);
@@ -44,11 +47,11 @@ public class UserController {
 
         user = userService.create(user);
 
-        return userMapper.toDto(user);
+        return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.OK);
     }
 
     @PostMapping("/auth")
-    public UserDto auth(@RequestBody UserCredentials credentials) throws NoSuchAlgorithmException,
+    public ResponseEntity<UserDto> auth(@RequestBody UserCredentials credentials) throws NoSuchAlgorithmException,
             InvalidKeySpecException {
 
         try {
@@ -56,7 +59,7 @@ public class UserController {
 
             if (encoder.authenticate(credentials.getPassword(), user.getPassword(), user.getSalt())) {
 
-                return userMapper.toDto(user);
+                return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.OK);
 
             } else {
                 throw new BadCredentialsException("Wrong password!");
@@ -65,12 +68,5 @@ public class UserController {
         } catch (NoSuchElementException e) {
             throw new BadCredentialsException("User with this name doesn't exist!");
         }
-    }
-
-    private String getErrorMessage(BindingResult bindingResult) {
-        return bindingResult.getFieldErrors()
-                .stream()
-                .map(error -> String.format("%s - %s;", error.getField(), error.getDefaultMessage()))
-                .collect(Collectors.joining(" "));
     }
 }

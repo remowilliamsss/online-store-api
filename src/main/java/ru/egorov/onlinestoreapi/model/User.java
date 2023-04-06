@@ -2,6 +2,7 @@ package ru.egorov.onlinestoreapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class User {
     private int id;
 
     @Size(max = 256)
-    @NotEmpty
+    @NotBlank
     @Column(unique = true)
     private String name;
 
