@@ -21,9 +21,17 @@ public class Product {
     @NotBlank
     private String name;
 
-    private String category;
+    private Boolean candle;
 
-    private String subcategory;
+    private Boolean diffuser;
+
+    private Boolean autodiffuser;
+
+    private Boolean isNew;
+
+    private Boolean isHit;
+
+    private Boolean isSale;
 
     private Double price;
 

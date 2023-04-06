@@ -54,8 +54,10 @@ public class UserController {
     public ResponseEntity<UserDto> auth(@RequestBody UserCredentials credentials) throws NoSuchAlgorithmException,
             InvalidKeySpecException {
 
+        String name = credentials.getName();
+
         try {
-            User user = userService.find(credentials.getName());
+            User user = userService.find(name);
 
             if (encoder.authenticate(credentials.getPassword(), user.getPassword(), user.getSalt())) {
 
@@ -66,7 +68,7 @@ public class UserController {
             }
 
         } catch (NoSuchElementException e) {
-            throw new BadCredentialsException("User with this name doesn't exist!");
+            throw new BadCredentialsException(String.format("User with name \"%s\" doesn't exist!", name));
         }
     }
 }

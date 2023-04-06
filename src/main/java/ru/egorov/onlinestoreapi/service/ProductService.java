@@ -12,7 +12,7 @@ import ru.egorov.onlinestoreapi.repository.ProductRepository;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public Product create(Product product) {
+    public Product save(Product product) {
         return productRepository.save(product);
     }
 
@@ -25,21 +25,8 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 
-    public Page<Product> findAllByCategory(String category, Pageable pageable) {
-        return productRepository.findAllByCategoryIgnoreCase(category, pageable);
-    }
-
-    public Page<Product> findAllBySubcategory(String subcategory, Pageable pageable) {
-        return productRepository.findAllBySubcategoryIgnoreCase(subcategory, pageable);
-    }
-
     public Page<Product> findAllByName(String name, Pageable pageable) {
         return productRepository.findAllByNameContainingIgnoreCase(name, pageable);
-    }
-
-    public Product update(Product product) {
-
-        return productRepository.save(product);
     }
 
     public void delete(Integer id) {

@@ -8,4 +8,6 @@ import ru.egorov.onlinestoreapi.model.Product;
 public interface ProductMapper {
 
     ProductDto toDto(Product product);
+
+    Product toEntity(ProductDto productDto);
 }

@@ -22,12 +22,14 @@ public class ProductValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Product product = (Product) target;
+        int id = product.getId();
 
         try {
-            productService.find(product.getId());
+            productService.find(id);
 
         } catch (NoSuchElementException e) {
-            errors.rejectValue("id", "", "product with this id doesn't exist");
+            errors.rejectValue("id", "",
+                    String.format("product with id %d doesn't exist", id));
         }
     }
 }

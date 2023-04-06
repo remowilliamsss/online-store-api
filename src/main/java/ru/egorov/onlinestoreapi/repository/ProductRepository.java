@@ -9,9 +9,5 @@ import ru.egorov.onlinestoreapi.model.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    Page<Product> findAllByCategoryIgnoreCase(String category, Pageable pageable);
-
-    Page<Product> findAllBySubcategoryIgnoreCase(String subcategory, Pageable pageable);
-
     Page<Product> findAllByNameContainingIgnoreCase(String subcategory, Pageable pageable);
 }

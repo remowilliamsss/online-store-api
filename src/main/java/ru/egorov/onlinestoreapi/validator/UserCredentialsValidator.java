@@ -24,9 +24,12 @@ public class UserCredentialsValidator implements Validator {
         UserCredentials credentials = (UserCredentials) target;
 
         try {
-            userService.find(credentials.getName());
+            String name = credentials.getName();
 
-            errors.rejectValue("name", "", "user with this name already exists");
+            userService.find(name);
+
+            errors.rejectValue("name", "",
+                    String.format("user with name \"%s\" already exists", name));
 
         } catch (NoSuchElementException ignored) { // все ОК
         }
