@@ -29,7 +29,7 @@ public class UserCredentialsValidator implements Validator {
             userService.find(name);
 
             errors.rejectValue("name", "",
-                    String.format("user with name \"%s\" already exists", name));
+                    String.format("user with name %s already exists", name));
 
         } catch (NoSuchElementException ignored) { // все ОК
         }

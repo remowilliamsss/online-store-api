@@ -30,7 +30,7 @@ public class ProductController {
     private final ProductMapper productMapper;
     private final ProductValidator productValidator;
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductDto productDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ProductNotAddedOrUpdatedException(getErrorMessage(bindingResult));
