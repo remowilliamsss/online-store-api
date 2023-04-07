@@ -15,6 +15,8 @@ import ru.egorov.onlinestoreapi.exception.ProductNotAddedOrUpdatedException;
 import ru.egorov.onlinestoreapi.exception.ProductNotFoundException;
 import ru.egorov.onlinestoreapi.mapper.ProductMapper;
 import ru.egorov.onlinestoreapi.model.Product;
+import ru.egorov.onlinestoreapi.model.CategoryType;
+import ru.egorov.onlinestoreapi.model.SubcategoryType;
 import ru.egorov.onlinestoreapi.service.ProductService;
 import ru.egorov.onlinestoreapi.validator.ProductValidator;
 
@@ -70,6 +72,22 @@ public class ProductController {
             @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
 
         Page<Product> products = productService.findAllByName(query, pageable);
+
+        return new ResponseEntity<>(products.map(productMapper::toDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/categories/{category}")
+    public ResponseEntity<Page<ProductDto>> findByCategory(@PathVariable("category") CategoryType category,
+                                               @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+        Page<Product> products = productService.findAllByCategory(category, pageable);
+
+        return new ResponseEntity<>(products.map(productMapper::toDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/subs/{sub}")
+    public ResponseEntity<Page<ProductDto>> findByCategory(@PathVariable("sub") SubcategoryType sub,
+                                               @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+        Page<Product> products = productService.findAllBySubcategory(sub, pageable);
 
         return new ResponseEntity<>(products.map(productMapper::toDto), HttpStatus.OK);
     }

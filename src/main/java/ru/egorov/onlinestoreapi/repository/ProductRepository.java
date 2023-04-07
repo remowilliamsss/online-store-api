@@ -10,4 +10,16 @@ import ru.egorov.onlinestoreapi.model.Product;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findAllByNameContainingIgnoreCase(String subcategory, Pageable pageable);
+
+    Page<Product> findAllByCandleIsTrue(Pageable pageable);
+
+    Page<Product> findAllByDiffuserIsTrue(Pageable pageable);
+
+    Page<Product> findAllByAutodiffuserIsTrue(Pageable pageable);
+
+    Page<Product> findAllByIsNewIsTrue(Pageable pageable);
+
+    Page<Product> findAllByIsHitIsTrue(Pageable pageable);
+
+    Page<Product> findAllByIsSaleIsTrue(Pageable pageable);
 }

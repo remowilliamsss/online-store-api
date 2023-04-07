@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.egorov.onlinestoreapi.model.Product;
+import ru.egorov.onlinestoreapi.model.CategoryType;
+import ru.egorov.onlinestoreapi.model.SubcategoryType;
 import ru.egorov.onlinestoreapi.repository.ProductRepository;
 
 @Service
@@ -23,6 +25,22 @@ public class ProductService {
 
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+    public Page<Product> findAllByCategory(CategoryType category, Pageable pageable) {
+        return switch (category) {
+            case candles -> productRepository.findAllByCandleIsTrue(pageable);
+            case diffs -> productRepository.findAllByDiffuserIsTrue(pageable);
+            case autodiffs -> productRepository.findAllByAutodiffuserIsTrue(pageable);
+        };
+    }
+
+    public Page<Product> findAllBySubcategory(SubcategoryType sub, Pageable pageable) {
+        return switch (sub) {
+            case news -> productRepository.findAllByIsNewIsTrue(pageable);
+            case hits -> productRepository.findAllByIsHitIsTrue(pageable);
+            case sales -> productRepository.findAllByIsSaleIsTrue(pageable);
+        };
     }
 
     public Page<Product> findAllByName(String name, Pageable pageable) {
