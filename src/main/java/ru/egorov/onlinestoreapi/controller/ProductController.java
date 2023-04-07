@@ -85,7 +85,7 @@ public class ProductController {
     }
 
     @GetMapping("/subs/{sub}")
-    public ResponseEntity<Page<ProductDto>> findByCategory(@PathVariable("sub") SubcategoryType sub,
+    public ResponseEntity<Page<ProductDto>> findBySubcategory(@PathVariable("sub") SubcategoryType sub,
                                                @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
         Page<Product> products = productService.findAllBySubcategory(sub, pageable);
 

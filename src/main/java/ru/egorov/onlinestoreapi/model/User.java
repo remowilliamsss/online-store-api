@@ -37,8 +37,8 @@ public class User {
     private Boolean isAdmin;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "owner")
-    private ShoppingCart cart;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)

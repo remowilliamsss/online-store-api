@@ -6,19 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.egorov.onlinestoreapi.dto.ProductDto;
-import ru.egorov.onlinestoreapi.dto.UserCredentials;
-import ru.egorov.onlinestoreapi.dto.UserDto;
+import ru.egorov.onlinestoreapi.dto.*;
 import ru.egorov.onlinestoreapi.exception.BadCredentialsException;
 import ru.egorov.onlinestoreapi.exception.ProductNotAddedOrUpdatedException;
 import ru.egorov.onlinestoreapi.exception.UserNotFoundException;
-import ru.egorov.onlinestoreapi.mapper.ProductMapper;
-import ru.egorov.onlinestoreapi.mapper.ProductSetMapper;
-import ru.egorov.onlinestoreapi.mapper.UserMapper;
+import ru.egorov.onlinestoreapi.mapper.*;
+import ru.egorov.onlinestoreapi.model.CartPosition;
 import ru.egorov.onlinestoreapi.model.Product;
 import ru.egorov.onlinestoreapi.model.User;
 import ru.egorov.onlinestoreapi.security.PasswordEncoder;
 import ru.egorov.onlinestoreapi.service.UserService;
+import ru.egorov.onlinestoreapi.validator.CartPositionValidator;
 import ru.egorov.onlinestoreapi.validator.UserCredentialsValidator;
 
 import java.security.NoSuchAlgorithmException;
@@ -36,8 +34,11 @@ public class UserController {
     private final UserMapper userMapper;
     private final ProductMapper productMapper;
     private final ProductSetMapper productSetMapper;
+    private final CartPositionMapper cartPositionMapper;
+    private final CartPositionSetMapper cartPositionSetMapper;
     private final PasswordEncoder encoder;
     private final UserCredentialsValidator validator;
+    private final CartPositionValidator cartPositionValidator;
 
     @PostMapping("/registration")
     public ResponseEntity<UserDto> registration(@RequestBody @Valid UserCredentials credentials, BindingResult bindingResult)
@@ -54,7 +55,7 @@ public class UserController {
         User user = new User(credentials.getName(), encoder.getEncryptedPassword(credentials
                 .getPassword(), salt), salt, credentials.getIsAdmin());
 
-        user = userService.save(user);
+        user = userService.create(user);
 
         return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.OK);
     }
@@ -116,6 +117,56 @@ public class UserController {
         try {
             Product product = productMapper.toEntity(productDto);
             userService.removeFavorite(id, product);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (NoSuchElementException e) {
+            throw new ProductNotAddedOrUpdatedException("User or product doesn't exist!");
+        }
+    }
+
+    @GetMapping("/{id}/cart")
+    public ResponseEntity<Set<CartPositionDto>> cart(@PathVariable("id") Integer id) {
+        try {
+            Set<CartPosition> cartPositions = userService.find(id)
+                    .getCart()
+                    .getPositions();
+
+            return new ResponseEntity<>(cartPositionSetMapper.toDtoSet(cartPositions), HttpStatus.OK);
+
+        } catch (NoSuchElementException e) {
+            throw new UserNotFoundException(String.format("User with id %d doesn't exist!", id));
+        }
+    }
+
+    @PostMapping("/{id}/cart/add")
+    public ResponseEntity<CartPositionDto> addToCart(@PathVariable("id") Integer id,
+                                                @RequestBody @Valid CartPositionDto cartPositionDto,
+                                                                        BindingResult bindingResult) {
+
+        CartPosition cartPosition = cartPositionMapper.toEntity(cartPositionDto);
+        cartPositionValidator.validate(cartPosition, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            throw new ProductNotAddedOrUpdatedException(getErrorMessage(bindingResult));
+        }
+
+        try {
+            cartPosition = userService.addToCart(id, cartPosition);
+
+            return new ResponseEntity<>(cartPositionMapper.toDto(cartPosition), HttpStatus.OK);
+
+        } catch (NoSuchElementException e) {
+            throw new ProductNotAddedOrUpdatedException(String.format("User with id %d doesn't exist!", id));
+        }
+    }
+
+    @DeleteMapping("/{id}/cart/remove")
+    public ResponseEntity<HttpStatus> removeFromCart(@PathVariable("id") Integer id,
+                                                     @RequestBody CartPositionDto cartPositionDto) {
+        try {
+            CartPosition cartPosition = cartPositionMapper.toEntity(cartPositionDto);
+            userService.removeFromCart(id, cartPosition);
 
             return new ResponseEntity<>(HttpStatus.OK);
 

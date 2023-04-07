@@ -4,10 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import ru.egorov.onlinestoreapi.model.Product;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -20,6 +16,4 @@ public class UserDto {
     private String name;
 
     private Boolean isAdmin;
-
-    private Set<Product> favorites = new HashSet<>();
 }
