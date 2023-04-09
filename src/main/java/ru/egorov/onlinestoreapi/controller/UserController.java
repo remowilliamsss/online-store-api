@@ -1,5 +1,8 @@
 package ru.egorov.onlinestoreapi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,7 @@ import static ru.egorov.onlinestoreapi.util.ErrorMessageBuilder.getErrorMessage;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/users")
+@Tag(name = "Пользователи", description = "Методы для работы с пользователями")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -41,8 +45,9 @@ public class UserController {
     private final CartPositionValidator cartPositionValidator;
 
     @PostMapping("/registration")
-    public ResponseEntity<UserDto> registration(@RequestBody @Valid UserCredentials credentials, BindingResult bindingResult)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    @Operation(summary = "Регистрация пользователя")
+    public ResponseEntity<UserDto> registration(@RequestBody @Valid UserCredentials credentials,
+            BindingResult bindingResult) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         validator.validate(credentials, bindingResult);
 
@@ -61,8 +66,9 @@ public class UserController {
     }
 
     @PostMapping("/auth")
+    @Operation(summary = "Аутентификация пользователя")
     public ResponseEntity<UserDto> auth(@RequestBody UserCredentials credentials) throws NoSuchAlgorithmException,
-            InvalidKeySpecException {
+                                                                                            InvalidKeySpecException {
 
         String name = credentials.getName();
 
@@ -83,7 +89,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/favorites")
-    public ResponseEntity<Set<ProductDto>> favorites(@PathVariable("id") Integer id) {
+    @Operation(summary = "Получение избранных товаров пользователя")
+    public ResponseEntity<Set<ProductDto>> favorites(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id) {
         try {
             Set<Product> products = userService.find(id)
                     .getFavorites();
@@ -96,7 +104,9 @@ public class UserController {
     }
 
     @PostMapping("/{id}/favorites/add")
-    public ResponseEntity<ProductDto> addFavorite(@PathVariable("id") Integer id,
+    @Operation(summary = "Добавление товара в \"Избранное\" пользователя")
+    public ResponseEntity<ProductDto> addFavorite(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id,
             @RequestBody ProductDto productDto) {
 
         try {
@@ -111,8 +121,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/favorites/remove")
-    public ResponseEntity<HttpStatus> removeFavorite(@PathVariable("id") Integer id,
-                                                  @RequestBody ProductDto productDto) {
+    @Operation(summary = "Удаление товара из \"Избранного\" пользователя")
+    public ResponseEntity<HttpStatus> removeFavorite(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id,
+            @RequestBody ProductDto productDto) {
 
         try {
             Product product = productMapper.toEntity(productDto);
@@ -126,7 +138,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cart")
-    public ResponseEntity<Set<CartPositionDto>> cart(@PathVariable("id") Integer id) {
+    @Operation(summary = "Получение товаров из корзины пользователя")
+    public ResponseEntity<Set<CartPositionDto>> cart(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id) {
         try {
             Set<CartPosition> cartPositions = userService.find(id)
                     .getCart()
@@ -140,9 +154,10 @@ public class UserController {
     }
 
     @PostMapping("/{id}/cart/add")
-    public ResponseEntity<CartPositionDto> addToCart(@PathVariable("id") Integer id,
-                                                @RequestBody @Valid CartPositionDto cartPositionDto,
-                                                                        BindingResult bindingResult) {
+    @Operation(summary = "Добавление товара в корзину пользователя")
+    public ResponseEntity<CartPositionDto> addToCart(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id,
+            @RequestBody @Valid CartPositionDto cartPositionDto, BindingResult bindingResult) {
 
         CartPosition cartPosition = cartPositionMapper.toEntity(cartPositionDto);
         cartPositionValidator.validate(cartPosition, bindingResult);
@@ -162,8 +177,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/cart/remove")
-    public ResponseEntity<HttpStatus> removeFromCart(@PathVariable("id") Integer id,
-                                                     @RequestBody CartPositionDto cartPositionDto) {
+    @Operation(summary = "Удаление товара из корзины пользователя")
+    public ResponseEntity<HttpStatus> removeFromCart(
+            @PathVariable("id") @Parameter(description = "Идентификатор пользователя") Integer id,
+            @RequestBody CartPositionDto cartPositionDto) {
         try {
             CartPosition cartPosition = cartPositionMapper.toEntity(cartPositionDto);
             userService.removeFromCart(id, cartPosition);

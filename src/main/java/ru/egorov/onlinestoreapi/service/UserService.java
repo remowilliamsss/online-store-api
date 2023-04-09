@@ -1,5 +1,6 @@
 package ru.egorov.onlinestoreapi.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.egorov.onlinestoreapi.model.CartPosition;
@@ -16,6 +17,7 @@ public class UserService {
     private final CartPositionService cartPositionService;
     private final CartService cartService;
 
+    @Transactional
     public User create(User user) {
         Cart cart = cartService.save(new Cart(user));
         user.setCart(cart);
@@ -23,6 +25,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User update(User user) {
         return userRepository.save(user);
     }
@@ -37,10 +40,7 @@ public class UserService {
                 .orElseThrow();
     }
 
-    public void delete(Integer id) {
-        userRepository.deleteById(id);
-    }
-
+    @Transactional
     public Product addFavorite(Integer userId, Product product) {
         User user = find(userId);
         product = productService.find(product.getId());
@@ -57,6 +57,7 @@ public class UserService {
         return product;
     }
 
+    @Transactional
     public void removeFavorite(Integer userId, Product product) {
         User user = find(userId);
         product = productService.find(product.getId());
@@ -70,6 +71,7 @@ public class UserService {
         productService.save(product);
     }
 
+    @Transactional
     public CartPosition addToCart(Integer userId, CartPosition cartPosition) {
         User user = find(userId);
         Cart cart = user.getCart();
@@ -88,6 +90,7 @@ public class UserService {
         return cartPosition;
     }
 
+    @Transactional
     public void removeFromCart(Integer userId, CartPosition cartPosition) {
         User user = find(userId);
         Cart cart = user.getCart();

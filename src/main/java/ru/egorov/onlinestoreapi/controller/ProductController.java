@@ -1,7 +1,11 @@
 package ru.egorov.onlinestoreapi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -27,13 +31,16 @@ import static ru.egorov.onlinestoreapi.util.ErrorMessageBuilder.getErrorMessage;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/products")
+@Tag(name = "Товары", description = "Методы для работы с товарами")
 public class ProductController {
     private final ProductService productService;
     private final ProductMapper productMapper;
     private final ProductValidator productValidator;
 
     @PostMapping
+    @Operation(summary = "Создание нового товара")
     public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductDto productDto, BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             throw new ProductNotAddedOrUpdatedException(getErrorMessage(bindingResult));
         }
@@ -47,7 +54,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> find(@PathVariable("id") Integer id) {
+    @Operation(summary = "Информация о товаре по его id")
+    public ResponseEntity<ProductDto> find(
+            @PathVariable("id") @Parameter(description = "Идентификатор товара") Integer id) {
+
         try {
             Product product = productService.find(id);
 
@@ -59,8 +69,9 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "Получение всех товаров")
     public ResponseEntity<Page<ProductDto>> findAll(
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0) @ParameterObject Pageable pageable) {
 
         Page<Product> products = productService.findAll(pageable);
 
@@ -68,8 +79,10 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ProductDto>> search(@RequestParam("q") String query,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+    @Operation(summary = "Поиск по товарам")
+    public ResponseEntity<Page<ProductDto>> search(
+            @RequestParam("q") @Parameter(description = "Поисковой запрос") String query,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0) @ParameterObject Pageable pageable) {
 
         Page<Product> products = productService.findAllByName(query, pageable);
 
@@ -77,24 +90,33 @@ public class ProductController {
     }
 
     @GetMapping("/categories/{category}")
-    public ResponseEntity<Page<ProductDto>> findByCategory(@PathVariable("category") CategoryType category,
-                                               @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+    @Operation(summary = "Получение всех товаров категории")
+    public ResponseEntity<Page<ProductDto>> findByCategory(
+            @PathVariable("category") @Parameter(description = "Обозначение категории") CategoryType category,
+                            @PageableDefault(size = Integer.MAX_VALUE, page = 0) @ParameterObject Pageable pageable) {
+
         Page<Product> products = productService.findAllByCategory(category, pageable);
 
         return new ResponseEntity<>(products.map(productMapper::toDto), HttpStatus.OK);
     }
 
     @GetMapping("/subs/{sub}")
-    public ResponseEntity<Page<ProductDto>> findBySubcategory(@PathVariable("sub") SubcategoryType sub,
-                                               @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+    @Operation(summary = "Получение всех товаров подкатегории")
+    public ResponseEntity<Page<ProductDto>> findBySubcategory(
+            @PathVariable("sub") @Parameter(description = "Обозначение подкатегории") SubcategoryType sub,
+                           @PageableDefault(size = Integer.MAX_VALUE, page = 0) @ParameterObject Pageable pageable) {
+
         Page<Product> products = productService.findAllBySubcategory(sub, pageable);
 
         return new ResponseEntity<>(products.map(productMapper::toDto), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductDto> update(@PathVariable("id") Integer id,
-                                             @RequestBody @Valid ProductDto productDto, BindingResult bindingResult) {
+    @Operation(summary = "Обновление информации о товаре")
+    public ResponseEntity<ProductDto> update(
+            @PathVariable("id") @Parameter(description = "Идентификатор товара") Integer id,
+                    @RequestBody @Valid ProductDto productDto, BindingResult bindingResult) {
+
         Product product = productMapper.toEntity(productDto);
         product.setId(id);
         productValidator.validate(product, bindingResult);
@@ -109,7 +131,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatusCode> delete(@PathVariable("id") Integer id) {
+    @Operation(summary = "Удаление товара по id")
+    public ResponseEntity<HttpStatusCode> delete(
+            @PathVariable("id") @Parameter(description = "Идентификатор товара") Integer id) {
+
         try {
             productService.find(id);
             productService.delete(id);

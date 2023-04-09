@@ -1,5 +1,6 @@
 package ru.egorov.onlinestoreapi.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import ru.egorov.onlinestoreapi.repository.ProductRepository;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    @Transactional
     public Product save(Product product) {
         return productRepository.save(product);
     }
@@ -47,6 +49,7 @@ public class ProductService {
         return productRepository.findAllByNameContainingIgnoreCase(name, pageable);
     }
 
+    @Transactional
     public void delete(Integer id) {
         productRepository.deleteById(id);
     }
