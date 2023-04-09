@@ -84,7 +84,7 @@ public class UserController {
             }
 
         } catch (NoSuchElementException e) {
-            throw new BadCredentialsException(String.format("User with name \"%s\" doesn't exist!", name));
+            throw new BadCredentialsException("User with this name  doesn't exist!");
         }
     }
 
